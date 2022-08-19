@@ -1,15 +1,36 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useDeferredValue } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ReactComponent as ArrowLeft } from "../assets/arrow_left.svg";
+// import useDebounce from './use-debounce';
+// import debounce from 'lodash.debounce';
 
 const NotePage = () => {
   let navigate = useNavigate();
   let params = useParams();
+
   let [note, setNote] = useState([]);
 
+  let [inputText, setInputText] = useState([]);
+
+  const deferredText = useDeferredValue(note)
+
+  // useEffect(() => {
+  //   getNote();
+  // }, []);
+
   useEffect(() => {
+    // setNote({...note, body: inputText})
+    note.body = inputText;
+    console.log(note.body);
+    updateNote();
+  }, [inputText])
+
+  useEffect(() => {
+    
     getNote();
-  });
+    
+  }, [note])
+
 
   let getNote = async () => {
     if (params.id === "create") return;
@@ -26,22 +47,6 @@ const NotePage = () => {
       },
       body: JSON.stringify(note),
     });
-  };
-
-  let handleSubmit = () => {
-    if (params.id === "create") {
-      if (note.body) {
-        createNote();
-      }
-    } else {
-      if (note.body) {
-        updateNote();
-      } else {
-        deleteNote();
-      }
-    }
-
-    navigate("/", { replace: true });
   };
 
   let deleteNote = async () => {
@@ -67,6 +72,28 @@ const NotePage = () => {
     navigate("/", { replace: true });
   };
 
+   let handleSubmit = () => {
+    if (params.id === "create") {
+      if (note.body) {
+        createNote();
+      }
+    } else {
+      if (note.body) {
+        console.log('UPDATED:', note.body);
+        updateNote();
+        
+      } else {
+        deleteNote();
+      }
+    }
+
+    navigate("/", { replace: true });
+  };
+
+  let changeHandler = (e) => {
+    setInputText(e.target.value);   
+  }
+
   return (
     <div className="note">
       <div className="note-header">
@@ -80,11 +107,10 @@ const NotePage = () => {
         )}
       </div>
       <textarea
-        onChange={(e) => {
-          setNote({ ...note, body: e.target.value });
-        }}
+        onChange={changeHandler}
         defaultValue={note?.body}
       ></textarea>
+      <textarea defaultValue={note?.rythm}></textarea>
     </div>
   );
 };
