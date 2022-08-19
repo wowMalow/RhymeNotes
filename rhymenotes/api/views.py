@@ -54,7 +54,8 @@ def getNotes(request):
 def createNote(request):
     data = request.data
     note = Note.objects.create(
-        body=data['body']
+        body=data['body'],
+        rythm=data['body'].upper()
     )
     serializer = NoteSerializer(note, many=False)
     return Response(serializer.data)
@@ -70,6 +71,10 @@ def getNote(request, pk):
 @api_view(['PUT'])
 def updateNote(request, pk):
     data = request.data
+    print('REQ:',request)
+    print('DATA:',data)
+    data['rythm'] = data['body'].upper()
+    print(data)
     note = Note.objects.get(id=pk)
     serializer = NoteSerializer(instance=note, data=data)
 
