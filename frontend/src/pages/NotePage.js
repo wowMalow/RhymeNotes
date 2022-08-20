@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useDeferredValue } from "react";
+import React, { useState, useEffect, useDeb, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ReactComponent as ArrowLeft } from "../assets/arrow_left.svg";
-// import useDebounce from './use-debounce';
+import useDebounce from '../utils/useDebounce';
 // import debounce from 'lodash.debounce';
 
 const NotePage = () => {
@@ -10,9 +10,13 @@ const NotePage = () => {
 
   let [note, setNote] = useState([]);
 
+  let previuos_state_text = useRef("");
+
   let [inputText, setInputText] = useState([]);
 
-  const deferredText = useDeferredValue(note)
+  const debouncedInputText = useDebounce(inputText, 1000);
+
+  // const deferredText = useDeferredValue(note)
 
   // useEffect(() => {
   //   getNote();
@@ -20,23 +24,39 @@ const NotePage = () => {
 
   useEffect(() => {
     // setNote({...note, body: inputText})
-    note.body = inputText;
-    console.log(note.body);
-    updateNote();
-  }, [inputText])
+    // previuos_state_text.current = ;
+    note.body = debouncedInputText;
+    // previuos_state_text = note.body;
+    setNote({...note, body: debouncedInputText});
+    console.log("INPUT_BODY:", note.body);
+    // console.log("INPUT_TEXT:", previuos_state_text.current);
+    if (note.body.length !== 0) {
+      updateNote();
+    }
+    
+  }, [debouncedInputText]);
 
   useEffect(() => {
-    
-    getNote();
-    
-  }, [note])
+    // console.log("NOTE UP:", note.body);
+    // console.log("TEXT UP:", previuos_state_text.current);
 
+    if (previuos_state_text.current !== note.body) {
+      console.log("NOTE IF:", note.body);
+      // console.log("TEXT IF:", previuos_state_text.current);
+      previuos_state_text.current = note.body;
+      getNote();
+    }
+    // console.log("NOTE after:", note.body);
+    // console.log("TEXT after:", previuos_state_text.current);
+  }, [note.body]);
 
   let getNote = async () => {
     if (params.id === "create") return;
+
     let response = await fetch(`/notes/${params.id}/`);
     let data = await response.json();
     setNote(data);
+    // console.log("GET SENT");
   };
 
   let updateNote = async () => {
@@ -47,6 +67,7 @@ const NotePage = () => {
       },
       body: JSON.stringify(note),
     });
+    // console.log("UPDATE SENT");
   };
 
   let deleteNote = async () => {
@@ -72,16 +93,15 @@ const NotePage = () => {
     navigate("/", { replace: true });
   };
 
-   let handleSubmit = () => {
+  let handleSubmit = () => {
     if (params.id === "create") {
       if (note.body) {
         createNote();
       }
     } else {
       if (note.body) {
-        console.log('UPDATED:', note.body);
+        console.log("UPDATED:", note.body);
         updateNote();
-        
       } else {
         deleteNote();
       }
@@ -91,8 +111,8 @@ const NotePage = () => {
   };
 
   let changeHandler = (e) => {
-    setInputText(e.target.value);   
-  }
+    setInputText(e.target.value);
+  };
 
   return (
     <div className="note">
@@ -106,10 +126,7 @@ const NotePage = () => {
           <button onClick={handleSubmit}>Done</button>
         )}
       </div>
-      <textarea
-        onChange={changeHandler}
-        defaultValue={note?.body}
-      ></textarea>
+      <textarea onChange={changeHandler} defaultValue={note?.body}></textarea>
       <textarea defaultValue={note?.rythm}></textarea>
     </div>
   );

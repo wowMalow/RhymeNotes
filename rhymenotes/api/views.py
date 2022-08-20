@@ -71,8 +71,6 @@ def getNote(request, pk):
 @api_view(['PUT'])
 def updateNote(request, pk):
     data = request.data
-    print('REQ:',request)
-    print('DATA:',data)
     data['rythm'] = data['body'].upper()
     print(data)
     note = Note.objects.get(id=pk)
