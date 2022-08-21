@@ -64,7 +64,7 @@ a {
 
 .app {
   width: 100%;
-  max-width: 480px;
+  max-width: 680px;
   height: 88vh;
   margin: 0 auto;
   background-color: var(--color-white);
@@ -232,11 +232,20 @@ a {
   background-color: var(--color-white);
   border: none;
   padding: 16px 12px;
-  width: 100%;
+  width: 50%;
   height: 70vh;
   resize: none;
   scrollbar-width: none; /* Firefox */
 }
+
+.note textarea.lyrics {
+  width: 70%;
+}
+
+.note textarea.rythm {
+  width: 30%;
+}
+
 
 .note textarea:active,
 .note textarea:focus {

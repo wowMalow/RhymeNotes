@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useDeb, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ReactComponent as ArrowLeft } from "../assets/arrow_left.svg";
-import useDebounce from '../utils/useDebounce';
+import useDebounce from "../utils/useDebounce";
 // import debounce from 'lodash.debounce';
 
 const NotePage = () => {
@@ -27,13 +27,12 @@ const NotePage = () => {
     // previuos_state_text.current = ;
     note.body = debouncedInputText;
     // previuos_state_text = note.body;
-    setNote({...note, body: debouncedInputText});
+    setNote({ ...note, body: debouncedInputText });
     console.log("INPUT_BODY:", note.body);
     // console.log("INPUT_TEXT:", previuos_state_text.current);
     if (note.body.length !== 0) {
       updateNote();
     }
-    
   }, [debouncedInputText]);
 
   useEffect(() => {
@@ -60,14 +59,16 @@ const NotePage = () => {
   };
 
   let updateNote = async () => {
-    fetch(`/notes/${params.id}/update/`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(note),
-    });
-    // console.log("UPDATE SENT");
+    if (params.id !== "create") {
+      fetch(`/notes/${params.id}/update/`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(note),
+      });
+      // console.log("UPDATE SENT");
+    }
   };
 
   let deleteNote = async () => {
@@ -126,8 +127,8 @@ const NotePage = () => {
           <button onClick={handleSubmit}>Done</button>
         )}
       </div>
-      <textarea onChange={changeHandler} defaultValue={note?.body}></textarea>
-      <textarea defaultValue={note?.rythm}></textarea>
+      <textarea className="lyrics" onChange={changeHandler} defaultValue={note?.body}></textarea>
+      <textarea className="rythm" defaultValue={note?.rythm}></textarea>
     </div>
   );
 };

@@ -5,6 +5,8 @@ from rest_framework.decorators import api_view
 from .models import Note
 from .serializers import NoteSerializer
 
+from .services.patterns import getRythmicalPattern
+
 
 @api_view(['GET'])
 def getRoutes(request):
@@ -55,7 +57,7 @@ def createNote(request):
     data = request.data
     note = Note.objects.create(
         body=data['body'],
-        rythm=data['body'].upper()
+        rythm=getRythmicalPattern(data['body'])
     )
     serializer = NoteSerializer(note, many=False)
     return Response(serializer.data)
@@ -71,7 +73,7 @@ def getNote(request, pk):
 @api_view(['PUT'])
 def updateNote(request, pk):
     data = request.data
-    data['rythm'] = data['body'].upper()
+    data['rythm'] = getRythmicalPattern(data['body'])
     print(data)
     note = Note.objects.get(id=pk)
     serializer = NoteSerializer(instance=note, data=data)
